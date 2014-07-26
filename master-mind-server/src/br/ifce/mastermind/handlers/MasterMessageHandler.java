@@ -3,6 +3,7 @@ package br.ifce.mastermind.handlers;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -16,7 +17,20 @@ public class MasterMessageHandler extends AbstractMessageHandler {
 
     @Override
     public void process() {
-        MessageUtil.getMessage(getSocket());
-        MessageUtil.sendMessage(getSocket(), "alooou");
+
+        try {
+            MessageUtil.sendMessage(getSocket(), "Congrats! You are the master! Choose the password: ");
+
+            while (true) {
+
+                MessageUtil.getMessage(getSocket());
+                this.setBusy(false);
+
+            }
+        } catch (IOException e) {
+            getLogger().error(Thread.currentThread().getName() + " is aborting the game....");
+            Thread.currentThread().interrupt();
+            this.setBusy(false);
+        }
     }
 }

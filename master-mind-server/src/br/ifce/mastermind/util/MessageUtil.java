@@ -17,31 +17,35 @@ public class MessageUtil {
 
     private static Logger logger = LogManager.getLogger(MessageUtil.class.getName());
 
-    public static String getMessage(Socket socket) {
+    public static String getMessage(Socket socket) throws IOException {
         String result = "";
         DataInputStream inputStream = null;
 
         try {
             inputStream = new DataInputStream(socket.getInputStream());
             result = inputStream.readUTF();
-            logger.trace("Reading the follow message... " + result);
+            logger.debug("Reading the follow message... " + result);
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("Couldn't get a message, input is no longer available! ");
+            inputStream.close();
+            throw e;
         }
 
         return result;
     }
 
-    public static void sendMessage(Socket socket, String message) {
+    public static void sendMessage(Socket socket, String message) throws IOException {
 
         DataOutputStream outputStream = null;
 
         try {
             outputStream = new DataOutputStream(socket.getOutputStream());
             outputStream.writeUTF(message);
-            logger.trace("Sending the follow message... " + message);
+            logger.debug("Sending the follow message... " + message);
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("Couldn't get a message, output is no longer available! ");
+            outputStream.close();
+            throw e;
         }
     }
 }

@@ -35,7 +35,7 @@ public class Server {
 
     public void start() {
 
-        logger.error("Starting \"Master Mind\" server... waiting for players!");
+        logger.debug("Starting \"Master Mind\" server... waiting for players!");
 
         ServerSocket serverSocket;
 
@@ -46,22 +46,22 @@ public class Server {
             Socket masterSocket = serverSocket.accept();
             AbstractMessageHandler masterHandler = MessageHandlerFactory.build(masterSocket, ClientType.MASTER);
             Thread masterThread = new Thread(masterHandler,"MASTER");
-            logger.trace("MASTER is starting the game!");
+            logger.debug("MASTER is starting the game!");
             masterThread.start();
 
             while (masterHandler.isBusy()) {
-                logger.trace("MASTER is busy... wait!");
-                Thread.sleep(1000);
+                logger.debug("MASTER is busy... wait!");
+                Thread.sleep(10000);
             }
 
             ThreadGroup players = new ThreadGroup("PLAYERS");
 
-            while (true) {
+            while (!masterThread.isInterrupted()) {
                 ++count;
                 Socket playerSocket = serverSocket.accept();
                 AbstractMessageHandler playerHandler = MessageHandlerFactory.build(playerSocket, ClientType.PLAYER);
                 Thread t = new Thread(players , playerHandler, "PLAYER_" + count);
-                logger.trace("PLAYER_" + count + " is starting the game!");
+                logger.debug("PLAYER_" + count + " is starting the game!");
                 t.start();
             }
 

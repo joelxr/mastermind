@@ -21,8 +21,12 @@ public class MessageHandler implements Runnable{
         DataInputStream inputStream = null;
 
         try {
-            inputStream = new DataInputStream(socket.getInputStream());
-            System.out.println(inputStream.readUTF());
+
+            while (true) {
+
+                inputStream = new DataInputStream(socket.getInputStream());
+                System.out.println(inputStream.readUTF());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
