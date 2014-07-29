@@ -1,10 +1,9 @@
 package br.ifce.mastermind.handlers;
 
 import br.ifce.mastermind.enums.ClientType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * Created by jrocha on 24/07/14.
@@ -19,7 +18,7 @@ public abstract class AbstractMessageHandler implements Runnable {
     public AbstractMessageHandler(ClientType type, Socket socket) {
         this.type = type;
         this.socket = socket;
-        this.logger = LogManager.getLogger(this.getClass().getName());
+        this.logger = Logger.getLogger(this.getClass().getName());
         this.isBusy = true;
     }
 

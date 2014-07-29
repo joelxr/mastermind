@@ -23,7 +23,7 @@ public class ColorUtil {
     }
 
     public static String[] getValidColorNames() {
-        return new String[]{ GREEN, YELLOW, BLUE, CYAN, ORANGE, RED, GRAY, BLACK, WHITE };
+        return new String[]{GREEN, YELLOW, BLUE, CYAN, ORANGE, RED, GRAY, BLACK, WHITE};
     }
 
     public static String color2String(Color color) {
@@ -55,7 +55,7 @@ public class ColorUtil {
         return result;
     }
 
-    public static Color string2Color (String color) {
+    public static Color string2Color(String color) {
         Color result = Color.DARK_GRAY;
 
         if (color.equalsIgnoreCase(GREEN)) {

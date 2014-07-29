@@ -5,6 +5,7 @@ import br.ifce.mastermind.util.MessageUtil;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
 
 /**
  * Created by jrocha on 25/07/14.
@@ -19,16 +20,14 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
     public void process() {
 
         try {
-            MessageUtil.sendMessage(getSocket(), "Ok, welcome to the game! Try to guess the password: ");
+            MessageUtil.sendMessage(getSocket(), Thread.currentThread().getName());
 
             while (true) {
-
                 MessageUtil.getMessage(getSocket());
                 this.setBusy(false);
-
             }
         } catch (IOException e) {
-            getLogger().error(Thread.currentThread().getName() + " is aborting the game...");
+            getLogger().log(Level.SEVERE, Thread.currentThread().getName() + " is aborting the game...");
             Thread.currentThread().interrupt();
         }
     }

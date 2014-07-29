@@ -5,8 +5,6 @@ import br.ifce.mastermind.handlers.AbstractMessageHandler;
 import br.ifce.mastermind.handlers.MasterMessageHandler;
 import br.ifce.mastermind.handlers.PlayerMessageHandler;
 
-import javax.swing.plaf.nimbus.AbstractRegionPainter;
-import javax.xml.ws.handler.HandlerResolver;
 import java.net.Socket;
 
 /**

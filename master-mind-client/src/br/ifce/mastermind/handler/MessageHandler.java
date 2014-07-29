@@ -1,35 +1,44 @@
 package br.ifce.mastermind.handler;
 
+import br.ifce.mastermind.util.MessageUtil;
+import br.ifce.mastermind.window.ClientWindow;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jrocha on 25/07/14.
  */
-public class MessageHandler implements Runnable{
+public class MessageHandler implements Runnable {
+
+    private static Logger logger = Logger.getLogger(MessageHandler.class.getName());
 
     private Socket socket;
 
-    public MessageHandler (Socket socket) {
+    public MessageHandler(Socket socket) {
         this.socket = socket;
     }
 
     @Override
     public void run() {
+        process();
+    }
 
-        DataInputStream inputStream = null;
+    private void process() {
 
         try {
 
-            while (true) {
+            ClientWindow clientWindow = ClientWindow.getInstance();
 
-                inputStream = new DataInputStream(socket.getInputStream());
-                System.out.println(inputStream.readUTF());
+            while (true) {
+                String result = MessageUtil.getMessage(socket) ;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Couldn't read a message from stream!" , e);
+            Thread.currentThread().interrupt();
         }
-
     }
 }

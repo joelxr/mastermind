@@ -10,14 +10,10 @@ public class Main {
 
     private static Client client;
 
-    private static ClientWindow window;
-
-    public static void main (String args[]) {
+    public static void main(String args[]) {
 
         client = Client.getInstance();
-        window = new ClientWindow();
-
         client.start();
-        window.start();
+
     }
 }

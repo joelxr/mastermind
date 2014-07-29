@@ -1,13 +1,11 @@
 package br.ifce.mastermind.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,7 +13,7 @@ import java.net.Socket;
  */
 public class MessageUtil {
 
-    private static Logger logger = LogManager.getLogger(MessageUtil.class.getName());
+    private static Logger logger = Logger.getLogger(MessageUtil.class.getName());
 
     public static String getMessage(Socket socket) throws IOException {
         String result = "";
@@ -24,9 +22,9 @@ public class MessageUtil {
         try {
             inputStream = new DataInputStream(socket.getInputStream());
             result = inputStream.readUTF();
-            logger.debug("Reading the follow message... " + result);
+            logger.info("Reading the follow message... " + result);
         } catch (IOException e) {
-            logger.error("Couldn't get a message, input is no longer available! ");
+            logger.log(Level.SEVERE, "Couldn't get a message, input is no longer available! ", e);
             inputStream.close();
             throw e;
         }
@@ -41,9 +39,9 @@ public class MessageUtil {
         try {
             outputStream = new DataOutputStream(socket.getOutputStream());
             outputStream.writeUTF(message);
-            logger.debug("Sending the follow message... " + message);
+            logger.info("Sending the follow message... " + message);
         } catch (IOException e) {
-            logger.error("Couldn't get a message, output is no longer available! ");
+            logger.log(Level.SEVERE, "Couldn't get a message, output is no longer available! ", e);
             outputStream.close();
             throw e;
         }

@@ -1,11 +1,15 @@
 package br.ifce.mastermind.client;
 
 import br.ifce.mastermind.constants.NetConstants;
-import br.ifce.mastermind.handler.KeywordHandler;
 import br.ifce.mastermind.handler.MessageHandler;
+import br.ifce.mastermind.util.MessageUtil;
+import br.ifce.mastermind.window.ClientWindow;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -13,11 +17,31 @@ import java.net.Socket;
  */
 public class Client {
 
+    private static Logger logger = Logger.getLogger(Client.class.getName());
     private static Client instance;
 
-    private Client () {}
+    private ClientWindow clientWindow;
+    private Socket clientSocket;
+    private String name;
 
-    public static Client getInstance (){
+    private Client() {
+        this.connect();
+        this.retrieveClientName();
+        this.clientWindow = ClientWindow.getInstance();
+        this.clientWindow.setNameLabelValue(name);
+    }
+
+    private void retrieveClientName() {
+
+        try {
+            String name = MessageUtil.getMessage(clientSocket);
+            this.name = name;
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't retrieve the thread name!", e);
+        }
+    }
+
+    public static Client getInstance() {
         if (instance == null) {
             instance = new Client();
         }
@@ -25,23 +49,23 @@ public class Client {
         return instance;
     }
 
+    public Socket getClientSocket() {
+        return this.clientSocket;
+    }
 
     public void start() {
-        Socket clientSocket = null;
+        MessageHandler messageHandler = new MessageHandler(clientSocket);
+        Thread messages = new Thread(messageHandler, name);
+        messages.start();
 
+        this.clientWindow.start();
+    }
+
+    private void connect() {
         try {
-            clientSocket = new Socket(NetConstants.LOCALHOST, NetConstants.SERVER_PORT);
-
-            KeywordHandler keywordHandler = new KeywordHandler(clientSocket);
-            Thread keyword = new Thread(keywordHandler);
-            keyword.start();
-
-            MessageHandler messageHandler = new MessageHandler(clientSocket);
-            Thread messages = new Thread(messageHandler);
-            messages.start();
-
+            this.clientSocket = new Socket(NetConstants.LOCALHOST, NetConstants.SERVER_PORT);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Couldn't connect to the server, make sure the server has been fully started!", e);
         }
     }
 }
