@@ -3,10 +3,17 @@ package br.ifce.mastermind.engine;
 import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
+import br.ifce.mastermind.handlers.AbstractMessageHandler;
+import br.ifce.mastermind.util.MessageUtil;
 
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * Created by jrocha on 28/07/14.
@@ -14,13 +21,16 @@ import java.util.Set;
 public class GameEngine {
 
     private static GameEngine engine;
+    private static Logger logger = Logger.getLogger(GameEngine.class.getName());
 
     private Set<MasterMindMessage> messages;
-
     private MasterMindMessage passwordMessage;
+    private AbstractMessageHandler masterHandler;
+    private List<AbstractMessageHandler> playersHandler;
 
     private GameEngine() {
         this.messages = new LinkedHashSet<MasterMindMessage>();
+        this.playersHandler = new ArrayList<AbstractMessageHandler>();
     }
 
     public static GameEngine getInstance() {
@@ -29,19 +39,17 @@ public class GameEngine {
         return engine;
     }
 
-    public Set<MasterMindMessage> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(Set<MasterMindMessage> messages) {
-        this.messages = messages;
-    }
-
     public void addMessage(MasterMindMessage message) {
         this.messages.add(message);
 
         if (message.getType() == ClientType.MASTER) {
             this.passwordMessage = message;
+        } else {
+            try {
+                MessageUtil.sendMasterMindMessage(masterHandler.getSocket(), message);
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Couldn't read a message from stream!", e);
+            }
         }
     }
 
@@ -75,11 +83,11 @@ public class GameEngine {
         }
     }
 
-    public MasterMindMessage getPasswordMessage() {
-        return passwordMessage;
+    public void setMasterHandler(AbstractMessageHandler handler) {
+        this.masterHandler = handler;
     }
 
-    public void setPasswordMessage(MasterMindMessage passwordMessage) {
-        this.passwordMessage = passwordMessage;
+    public void addPlayerHandler(AbstractMessageHandler handler) {
+        this.playersHandler.add(handler);
     }
 }

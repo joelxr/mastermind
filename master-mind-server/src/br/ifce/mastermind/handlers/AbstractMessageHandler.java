@@ -14,14 +14,13 @@ public abstract class AbstractMessageHandler implements Runnable {
     private ClientType type;
     private Socket socket;
     private Logger logger;
-    private GameEngine engine;
     private boolean isBusy;
 
     public AbstractMessageHandler(ClientType type, Socket socket) {
         this.type = type;
         this.socket = socket;
         this.logger = Logger.getLogger(this.getClass().getName());
-        this.engine = GameEngine.getInstance();
+
         this.isBusy = true;
     }
 
@@ -36,8 +35,6 @@ public abstract class AbstractMessageHandler implements Runnable {
     public Logger getLogger() {
         return this.logger;
     }
-
-    public GameEngine getEngine() { return this.engine; }
 
     public boolean isBusy() {
         return this.isBusy;

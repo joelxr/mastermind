@@ -1,5 +1,6 @@
 package br.ifce.mastermind.handler;
 
+import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
@@ -32,18 +33,13 @@ public class MessageHandler implements Runnable {
             ClientWindow clientWindow = ClientWindow.getInstance();
 
             while (true) {
-                if (Thread.currentThread().getName().equals("MASTER")) {
 
-                    String result = MessageUtil.getMessage(socket);
+                MasterMindMessage message = MessageUtil.getMasterMindMessage(socket);
+                clientWindow.addServerConfirmationColors(message);
 
-                    if ("MASTER".equalsIgnoreCase(result)) {
-                        clientWindow.disableControls();
-                        continue;
-                    }
-
-                } else if (Thread.currentThread().getName().contains("PLAYER")) {
-                    MasterMindMessage message = MessageUtil.getMasterMindMessage(socket);
-                    clientWindow.addServerConfirmationColors(message);
+                if (Thread.currentThread().getName().equals(Constants.MASTER)) {
+                    clientWindow.disableControls();
+                    continue;
                 }
             }
         } catch (Exception e) {

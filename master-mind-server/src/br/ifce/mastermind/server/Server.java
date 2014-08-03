@@ -1,6 +1,7 @@
 package br.ifce.mastermind.server;
 
 import br.ifce.mastermind.constants.Constants;
+import br.ifce.mastermind.engine.GameEngine;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.factory.MessageHandlerFactory;
 import br.ifce.mastermind.handlers.AbstractMessageHandler;
@@ -20,8 +21,10 @@ public class Server {
 
     private static Server instance;
 
-    private Server() {
+    private static GameEngine engine;
 
+    private Server() {
+        this.engine = GameEngine.getInstance();
     }
 
     public static Server getInstance() {
@@ -49,6 +52,8 @@ public class Server {
             logger.info("MASTER is starting the game!");
             masterThread.start();
 
+            this.engine.setMasterHandler(masterHandler);
+
             while (masterHandler.isBusy()) {
                 logger.info("MASTER is busy... wait!");
                 Thread.sleep(10000);
@@ -60,6 +65,7 @@ public class Server {
                 ++count;
                 Socket playerSocket = serverSocket.accept();
                 AbstractMessageHandler playerHandler = MessageHandlerFactory.build(playerSocket, ClientType.PLAYER);
+                this.engine.addPlayerHandler(playerHandler);
                 Thread t = new Thread(players, playerHandler, "PLAYER_" + count);
                 logger.info("PLAYER_" + count + " is starting the game!");
                 t.start();

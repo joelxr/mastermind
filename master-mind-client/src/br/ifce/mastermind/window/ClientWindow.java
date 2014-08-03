@@ -165,53 +165,79 @@ public class ClientWindow {
 
     public void addServerConfirmationColors(MasterMindMessage masterMindMessage) {
 
-        JPanel messagePanel = new JPanel();
-        messagePanel.setBorder(new LineBorder(Color.DARK_GRAY));
+        this.rows.add(this.getSelectedRow(masterMindMessage));
+        this.refreshSelectedPanel();
+    }
 
-        JLabel senderLabel = new JLabel();
-        senderLabel.setText(masterMindMessage.getClientName() + " # " + String.format("%03d", (masterMindMessage.getSequence())));
-
-        JPanel responsePanel = new JPanel();
-        responsePanel.setBorder(new LineBorder(Color.DARK_GRAY));
-
-        Color[] colors = masterMindMessage.getColors();
-        Color[] response = masterMindMessage.getResponse();
-
-        for (int i = 0; i < colors.length; i++) {
-            ColoredJLabel label = new ColoredJLabel(colors[i]);
-            messagePanel.add(label);
-        }
-
-        for (int i = 0; i < response.length; i++) {
-            ColoredJLabel label = new ColoredJLabel(response[i]);
-            responsePanel.add(label);
-        }
-
-        messagePanel.setVisible(true);
-        responsePanel.setVisible(true);
-
+    private void refreshSelectedPanel() {
         this.selectedPanel.removeAll();
-
-        JPanel row = new JPanel();
-
-        row.add(senderLabel);
-        row.add(messagePanel);
-        row.add(responsePanel);
-
-        this.rows.add(row);
-
-        row.add(new JLabel("(" + String.format("%03d", (this.rows.size() - 1)) + ")"));
 
         for (int i = this.rows.size() - 1; i >= 0; i--) {
             this.selectedPanel.add(this.rows.get(i));
         }
 
-        if (this.rows.size() < this.selectedPanel.getHeight() / row.getPreferredSize().getHeight()) {
-            this.selectedPanel.add(Box.createVerticalStrut((int) (this.selectedPanel.getHeight() - (row.getPreferredSize().getHeight() * this.rows.size()) - 10)));
+        if (this.rows.size() < this.selectedPanel.getHeight() / this.rows.get(0).getPreferredSize().getHeight()) {
+            this.selectedPanel.add(Box.createVerticalStrut((int) (this.selectedPanel.getHeight() - (this.rows.get(0).getPreferredSize().getHeight() * this.rows.size()) - 10)));
         }
 
         this.selectedPanel.updateUI();
+    }
 
+    private JPanel getSelectedRow(MasterMindMessage masterMindMessage) {
+
+        JPanel row = new JPanel();
+
+        JPanel messagePanel = getMessageColorsPanel(masterMindMessage);
+        JPanel responsePanel = getResponseMessagePanel(masterMindMessage);
+
+        row.add(new JLabel(masterMindMessage.getClientName() + " # " + String.format("%03d", (masterMindMessage.getSequence()))));
+
+        if (messagePanel != null)
+            row.add(messagePanel);
+        if (responsePanel != null)
+            row.add(responsePanel);
+
+        row.add(new JLabel("(" + String.format("%03d", this.rows.size()) + ")"));
+
+        return row;
+    }
+
+    private JPanel getResponseMessagePanel(MasterMindMessage masterMindMessage) {
+
+        Color[] response = masterMindMessage.getResponse();
+        JPanel responsePanel = null;
+
+        if (response != null) {
+
+            responsePanel = new JPanel();
+            responsePanel.setBorder(new LineBorder(Color.DARK_GRAY));
+
+            for (int i = 0; i < response.length; i++) {
+                ColoredJLabel label = new ColoredJLabel(response[i]);
+                responsePanel.add(label);
+            }
+        }
+
+        return responsePanel;
+    }
+
+    private JPanel getMessageColorsPanel(MasterMindMessage masterMindMessage) {
+
+        JPanel messagePanel = null;
+        Color[] colors = masterMindMessage.getColors();
+
+        if (colors != null) {
+
+            messagePanel = new JPanel();
+            messagePanel.setBorder(new LineBorder(Color.DARK_GRAY));
+
+            for (int i = 0; i < colors.length; i++) {
+                ColoredJLabel label = new ColoredJLabel(colors[i]);
+                messagePanel.add(label);
+            }
+        }
+
+        return messagePanel;
     }
 
     private void addSelectedColor() {

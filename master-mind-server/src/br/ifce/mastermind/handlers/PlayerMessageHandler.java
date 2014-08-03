@@ -1,5 +1,6 @@
 package br.ifce.mastermind.handlers;
 
+import br.ifce.mastermind.engine.GameEngine;
 import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
@@ -30,8 +31,8 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
                 message.setType(getType());
 
                 getLogger().info("Adding the follow message....  " + message);
-                getEngine().addMessage(message);
-                getEngine().checkMessage(message);
+                GameEngine.getInstance().addMessage(message);
+                GameEngine.getInstance().checkMessage(message);
 
                 MessageUtil.sendMasterMindMessage(getSocket(), message);
             }
