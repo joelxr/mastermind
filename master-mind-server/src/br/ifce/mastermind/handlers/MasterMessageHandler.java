@@ -1,5 +1,6 @@
 package br.ifce.mastermind.handlers;
 
+import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 
@@ -21,14 +22,23 @@ public class MasterMessageHandler extends AbstractMessageHandler {
 
         try {
             MessageUtil.sendMessage(getSocket(), Thread.currentThread().getName());
-            MessageUtil.sendMessage(getSocket(), "TEST");
+
+            MasterMindMessage message;
 
             while (true) {
-                MessageUtil.getMessage(getSocket());
+                message = MessageUtil.getMasterMindMessage(getSocket());
+                message.setType(getType());
+                getEngine().addMessage(message);
+                MessageUtil.sendMessage(getSocket(), message.getClientName());
+                getLogger().info("Adding the follow message....  " + message);
                 this.setBusy(false);
             }
 
         } catch (IOException e) {
+            getLogger().log(Level.SEVERE, Thread.currentThread().getName() + " is aborting the game....");
+            Thread.currentThread().interrupt();
+            this.setBusy(false);
+        } catch (ClassNotFoundException e) {
             getLogger().log(Level.SEVERE, Thread.currentThread().getName() + " is aborting the game....");
             Thread.currentThread().interrupt();
             this.setBusy(false);

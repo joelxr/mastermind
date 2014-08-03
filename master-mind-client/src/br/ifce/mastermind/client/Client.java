@@ -1,11 +1,10 @@
 package br.ifce.mastermind.client;
 
-import br.ifce.mastermind.constants.NetConstants;
+import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.handler.MessageHandler;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -63,7 +62,7 @@ public class Client {
 
     private void connect() {
         try {
-            this.clientSocket = new Socket(NetConstants.LOCALHOST, NetConstants.SERVER_PORT);
+            this.clientSocket = new Socket(Constants.LOCALHOST, Constants.SERVER_PORT);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Couldn't connect to the server, make sure the server has been fully started!", e);
         }

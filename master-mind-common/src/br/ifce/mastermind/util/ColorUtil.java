@@ -18,6 +18,17 @@ public class ColorUtil {
     public static final String WHITE = "White";
 
 
+    public static Color[] toColorArray (String[] colors) {
+
+        Color[] result = new Color[colors.length];
+
+        for (int i = 0; i < colors.length; i++) {
+            result[i] = string2Color(colors[i]);
+        }
+
+        return result;
+    }
+
     public static Color[] getValidColors() {
         return new Color[]{Color.GREEN, Color.YELLOW, Color.BLUE, Color.CYAN, Color.ORANGE, Color.RED, Color.GRAY};
     }

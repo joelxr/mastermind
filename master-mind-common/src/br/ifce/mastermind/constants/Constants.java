@@ -3,9 +3,10 @@ package br.ifce.mastermind.constants;
 /**
  * Created by jrocha on 25/07/14.
  */
-public class NetConstants {
+public class Constants {
 
     public static final String LOCALHOST = "localhost";
     public static final int SERVER_PORT = 3000;
+    public static final int COLORS_QUANTITY = 4;
 
 }

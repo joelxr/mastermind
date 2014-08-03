@@ -17,7 +17,12 @@ public class ColoredJLabel extends JLabel {
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(this.color);
+        if (this.color != null)
+            g.setColor(this.color);
+        else {
+            JPanel p = new JPanel();
+            g.setColor(p.getBackground());
+        }
         g.fillOval(0, 0, getWidth(), getHeight());
     }
 

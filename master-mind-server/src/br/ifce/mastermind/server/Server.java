@@ -1,6 +1,6 @@
 package br.ifce.mastermind.server;
 
-import br.ifce.mastermind.constants.NetConstants;
+import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.factory.MessageHandlerFactory;
 import br.ifce.mastermind.handlers.AbstractMessageHandler;
@@ -42,7 +42,7 @@ public class Server {
         try {
 
             int count = 0;
-            serverSocket = new ServerSocket(NetConstants.SERVER_PORT);
+            serverSocket = new ServerSocket(Constants.SERVER_PORT);
             Socket masterSocket = serverSocket.accept();
             AbstractMessageHandler masterHandler = MessageHandlerFactory.build(masterSocket, ClientType.MASTER);
             Thread masterThread = new Thread(masterHandler, "MASTER");

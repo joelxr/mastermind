@@ -1,8 +1,8 @@
 package br.ifce.mastermind.util;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import br.ifce.mastermind.entities.MasterMindMessage;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +25,7 @@ public class MessageUtil {
             logger.info("Reading the follow message... " + result);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Couldn't get a message, input is no longer available! ", e);
-            inputStream.close();
+            if (inputStream != null) inputStream.close();
             throw e;
         }
 
@@ -42,8 +42,46 @@ public class MessageUtil {
             logger.info("Sending the follow message... " + message);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Couldn't get a message, output is no longer available! ", e);
-            outputStream.close();
+            if (outputStream != null)
+                outputStream.close();
             throw e;
         }
+    }
+
+    public static void sendMasterMindMessage(Socket socket, MasterMindMessage message) throws IOException {
+
+        ObjectOutputStream outputStream = null;
+
+        try {
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputStream.writeObject(message);
+            logger.info("Sending the follow message... " + message);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't get a message, output is no longer available! ", e);
+            if (outputStream != null)
+                outputStream.close();
+            throw e;
+        }
+    }
+
+    public static MasterMindMessage getMasterMindMessage(Socket socket) throws IOException, ClassNotFoundException {
+        ObjectInputStream inputStream = null;
+        MasterMindMessage message = null;
+
+        try {
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            message = (MasterMindMessage) inputStream.readObject();
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't get a message, input is no longer available! ", e);
+            if (inputStream != null) inputStream.close();
+            throw e;
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.SEVERE, "Couldn't get a message, message has another format! ", e);
+            if (inputStream != null) inputStream.close();
+            throw e;
+        }
+
+        return message;
     }
 }
