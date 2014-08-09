@@ -7,7 +7,6 @@ import java.awt.*;
  */
 public class ColorUtil {
 
-    public static final String GRAY = "Gray";
     public static final String GREEN = "Green";
     public static final String YELLOW = "Yellow";
     public static final String BLUE = "Blue";
@@ -18,7 +17,7 @@ public class ColorUtil {
     public static final String WHITE = "White";
 
 
-    public static Color[] toColorArray (String[] colors) {
+    public static Color[] toColorArray(String[] colors) {
 
         Color[] result = new Color[colors.length];
 
@@ -30,11 +29,11 @@ public class ColorUtil {
     }
 
     public static Color[] getValidColors() {
-        return new Color[]{Color.GREEN, Color.YELLOW, Color.BLUE, Color.CYAN, Color.ORANGE, Color.RED, Color.GRAY};
+        return new Color[]{Color.GREEN, Color.YELLOW, Color.BLUE, Color.CYAN, Color.ORANGE, Color.RED};
     }
 
     public static String[] getValidColorNames() {
-        return new String[]{GREEN, YELLOW, BLUE, CYAN, ORANGE, RED, GRAY, BLACK, WHITE};
+        return new String[]{GREEN, YELLOW, BLUE, CYAN, ORANGE, RED, BLACK, WHITE};
     }
 
     public static String color2String(Color color) {
@@ -53,8 +52,6 @@ public class ColorUtil {
             result = ORANGE;
         } else if (color.equals(Color.RED)) {
             result = RED;
-        } else if (color.equals(Color.GRAY)) {
-            result = GRAY;
         } else if (color.equals(Color.BLACK)) {
             result = BLACK;
         } else if (color.equals(Color.WHITE)) {
@@ -81,8 +78,6 @@ public class ColorUtil {
             result = Color.ORANGE;
         } else if (color.equalsIgnoreCase(RED)) {
             result = Color.RED;
-        } else if (color.equalsIgnoreCase(GRAY)) {
-            result = Color.GRAY;
         } else if (color.equalsIgnoreCase(BLACK)) {
             result = Color.BLACK;
         } else if (color.equalsIgnoreCase(WHITE)) {

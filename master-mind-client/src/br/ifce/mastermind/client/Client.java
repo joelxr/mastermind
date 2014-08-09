@@ -30,6 +30,14 @@ public class Client {
         this.clientWindow.setNameLabelValue(name);
     }
 
+    public static Client getInstance() {
+        if (instance == null) {
+            instance = new Client();
+        }
+
+        return instance;
+    }
+
     private void retrieveClientName() {
 
         try {
@@ -38,14 +46,6 @@ public class Client {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Couldn't retrieve the thread name!", e);
         }
-    }
-
-    public static Client getInstance() {
-        if (instance == null) {
-            instance = new Client();
-        }
-
-        return instance;
     }
 
     public Socket getClientSocket() {

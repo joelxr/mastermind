@@ -1,6 +1,5 @@
 package br.ifce.mastermind.handlers;
 
-import br.ifce.mastermind.engine.GameEngine;
 import br.ifce.mastermind.enums.ClientType;
 
 import java.net.Socket;

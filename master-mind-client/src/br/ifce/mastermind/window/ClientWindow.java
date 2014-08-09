@@ -9,6 +9,7 @@ import br.ifce.mastermind.util.MessageUtil;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -163,6 +164,23 @@ public class ClientWindow {
 
     }
 
+    public void setWinnerRow() {
+
+        int row = this.rows.size() - 1;
+
+        if (row >= 0) {
+
+            JPanel lastRow = this.rows.get(row);
+
+            lastRow.setBorder(BorderFactory.createTitledBorder(
+                    BorderFactory.createMatteBorder(1, 5, 1, 1, Color.DARK_GRAY),
+                    Constants.WINNER,
+                    TitledBorder.CENTER,
+                    TitledBorder.DEFAULT_POSITION
+            ));
+        }
+    }
+
     public void addServerConfirmationColors(MasterMindMessage masterMindMessage) {
 
         this.rows.add(this.getSelectedRow(masterMindMessage));
@@ -187,44 +205,27 @@ public class ClientWindow {
 
         JPanel row = new JPanel();
 
-        JPanel messagePanel = getMessageColorsPanel(masterMindMessage);
-        JPanel responsePanel = getResponseMessagePanel(masterMindMessage);
+        JPanel messagePanel = getMessageColorsPanel(masterMindMessage.getColors());
+        JPanel responsePanel = getMessageColorsPanel(masterMindMessage.getResponse());
 
         row.add(new JLabel(masterMindMessage.getClientName() + " # " + String.format("%03d", (masterMindMessage.getSequence()))));
 
-        if (messagePanel != null)
+        if (messagePanel != null) {
             row.add(messagePanel);
-        if (responsePanel != null)
+        }
+
+        if (responsePanel != null) {
             row.add(responsePanel);
+        }
 
         row.add(new JLabel("(" + String.format("%03d", this.rows.size()) + ")"));
 
         return row;
     }
 
-    private JPanel getResponseMessagePanel(MasterMindMessage masterMindMessage) {
-
-        Color[] response = masterMindMessage.getResponse();
-        JPanel responsePanel = null;
-
-        if (response != null) {
-
-            responsePanel = new JPanel();
-            responsePanel.setBorder(new LineBorder(Color.DARK_GRAY));
-
-            for (int i = 0; i < response.length; i++) {
-                ColoredJLabel label = new ColoredJLabel(response[i]);
-                responsePanel.add(label);
-            }
-        }
-
-        return responsePanel;
-    }
-
-    private JPanel getMessageColorsPanel(MasterMindMessage masterMindMessage) {
+    private JPanel getMessageColorsPanel(Color[] colors) {
 
         JPanel messagePanel = null;
-        Color[] colors = masterMindMessage.getColors();
 
         if (colors != null) {
 

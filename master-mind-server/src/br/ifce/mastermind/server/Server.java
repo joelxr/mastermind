@@ -54,11 +54,6 @@ public class Server {
 
             this.engine.setMasterHandler(masterHandler);
 
-            while (masterHandler.isBusy()) {
-                logger.info("MASTER is busy... wait!");
-                Thread.sleep(10000);
-            }
-
             ThreadGroup players = new ThreadGroup("PLAYERS");
 
             while (masterThread.isAlive()) {
@@ -73,9 +68,6 @@ public class Server {
 
         } catch (IOException e) {
             logger.log(Level.SEVERE, "ERROR: Couldn't create the socket.", e);
-
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "ERROR: Main thread has been interrupted!", e);
         }
     }
 }

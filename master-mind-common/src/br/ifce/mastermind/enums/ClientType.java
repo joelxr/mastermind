@@ -5,14 +5,13 @@ package br.ifce.mastermind.enums;
  */
 public enum ClientType {
 
-    MASTER ("MASTER"), PLAYER("PLAYER");
+    MASTER("MASTER"), PLAYER("PLAYER");
 
     private final String name;
 
-    ClientType (String name) {
+    ClientType(String name) {
         this.name = name;
     }
-
 
 
 }

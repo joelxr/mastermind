@@ -10,10 +10,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
 
 /**
  * Created by jrocha on 28/07/14.
@@ -39,6 +39,14 @@ public class GameEngine {
         return engine;
     }
 
+    public void setMasterHandler(AbstractMessageHandler handler) {
+        this.masterHandler = handler;
+    }
+
+    public void addPlayerHandler(AbstractMessageHandler handler) {
+        this.playersHandler.add(handler);
+    }
+
     public void addMessage(MasterMindMessage message) {
         this.messages.add(message);
 
@@ -53,7 +61,7 @@ public class GameEngine {
         }
     }
 
-    public void checkMessage (MasterMindMessage message) {
+    public void checkMessage(MasterMindMessage message) {
 
         if (this.passwordMessage != null) {
             Color[] passwordColors = passwordMessage.getColors();
@@ -63,15 +71,15 @@ public class GameEngine {
             for (int i = 0; i < Constants.COLORS_QUANTITY; i++) {
                 for (int j = 0; j < Constants.COLORS_QUANTITY; j++) {
                     if (messageColors[i].equals(passwordColors[j])) {
-                      if (i == j) {
-                          response[i] = Color.BLACK;
-                          break;
-                      } else {
-                          response[i] = Color.WHITE;
-                          break;
-                      }
+                        if (i == j) {
+                            response[i] = Color.BLACK;
+                            break;
+                        } else {
+                            response[i] = Color.WHITE;
+                            break;
+                        }
                     } else {
-                        if (j == Constants.COLORS_QUANTITY-1) { // last interaction
+                        if (j == Constants.COLORS_QUANTITY - 1) { // last interaction
                             response[i] = null;
                             break;
                         }
@@ -80,14 +88,53 @@ public class GameEngine {
             }
 
             message.setResponse(response);
+
+            if (isWinner(message.getResponse())) {
+                notifyAllWinner(message);
+            }
         }
     }
 
-    public void setMasterHandler(AbstractMessageHandler handler) {
-        this.masterHandler = handler;
+    private boolean isWinner(Color[] response) {
+
+        boolean result = false;
+
+        if (response != null && response.length > 0) {
+
+            result = true;
+
+            for (int i = 0; i < Constants.COLORS_QUANTITY; i++) {
+                if (!response[i].equals(Color.BLACK)) {
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+
     }
 
-    public void addPlayerHandler(AbstractMessageHandler handler) {
-        this.playersHandler.add(handler);
+    public void notifyAllWinner(MasterMindMessage messageWon) {
+
+        MasterMindMessage message = new MasterMindMessage();
+        message.setClientName(messageWon.getClientName());
+        message.setType(messageWon.getType());
+        message.setColors(messageWon.getColors());
+        message.setSequence(messageWon.getSequence());
+        message.setResponse(messageWon.getResponse());
+        message.setRaw(Constants.WINNER);
+
+        try {
+
+            MessageUtil.sendMasterMindMessage(masterHandler.getSocket(), message);
+
+            for (int i = 0; i < this.playersHandler.size(); i++) {
+                MessageUtil.sendMasterMindMessage(playersHandler.get(i).getSocket(), message);
+            }
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't notify all player about the winner!", e);
+        }
+
     }
 }

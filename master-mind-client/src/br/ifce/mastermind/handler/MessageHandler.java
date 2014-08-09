@@ -5,6 +5,7 @@ import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
 
+import javax.swing.*;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +36,15 @@ public class MessageHandler implements Runnable {
             while (true) {
 
                 MasterMindMessage message = MessageUtil.getMasterMindMessage(socket);
-                clientWindow.addServerConfirmationColors(message);
+
+                if (message.getRaw().equals(Constants.WINNER)) {
+                    clientWindow.disableControls();
+                    clientWindow.setWinnerRow();
+                    JOptionPane.showConfirmDialog(null, message.getClientName() + " won the game with the follow message!", "Winner", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    clientWindow.addServerConfirmationColors(message);
+                }
+
 
                 if (Thread.currentThread().getName().equals(Constants.MASTER)) {
                     clientWindow.disableControls();
