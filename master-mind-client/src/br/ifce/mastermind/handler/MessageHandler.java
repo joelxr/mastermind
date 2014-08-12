@@ -45,7 +45,6 @@ public class MessageHandler implements Runnable {
                     clientWindow.addServerConfirmationColors(message);
                 }
 
-
                 if (Thread.currentThread().getName().equals(Constants.MASTER)) {
                     clientWindow.disableControls();
                     continue;

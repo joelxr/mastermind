@@ -137,4 +137,12 @@ public class GameEngine {
         }
 
     }
+
+    public boolean hasPassword() {
+        return this.passwordMessage != null;
+    }
+
+    public MasterMindMessage getPasswordMessage() {
+        return this.passwordMessage;
+    }
 }

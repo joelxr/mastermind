@@ -23,6 +23,7 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
 
         try {
             MessageUtil.sendMessage(getSocket(), Thread.currentThread().getName());
+            MessageUtil.sendMasterMindMessage(getSocket(), GameEngine.getInstance().getPasswordMessage());
 
             MasterMindMessage message;
 
@@ -30,11 +31,16 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
                 message = MessageUtil.getMasterMindMessage(getSocket());
                 message.setType(getType());
 
-                getLogger().info("Adding the follow message....  " + message);
-                GameEngine.getInstance().addMessage(message);
-                GameEngine.getInstance().checkMessage(message);
+                if (GameEngine.getInstance().hasPassword()) {
 
-                MessageUtil.sendMasterMindMessage(getSocket(), message);
+                    getLogger().info("Adding the follow message....  " + message);
+                    GameEngine.getInstance().addMessage(message);
+                    GameEngine.getInstance().checkMessage(message);
+
+                    MessageUtil.sendMasterMindMessage(getSocket(), message);
+                } else {
+                    getLogger().info("Master Player must set the password first!");
+                }
             }
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, Thread.currentThread().getName() + " is aborting the game...");

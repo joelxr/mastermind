@@ -331,7 +331,6 @@ public class ClientWindow {
         constraints.gridy = 3;
         constraints.gridwidth = 1;
         container.add(this.addColorButton, constraints);
-
     }
 
 }
