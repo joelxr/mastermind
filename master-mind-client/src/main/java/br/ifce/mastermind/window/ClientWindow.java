@@ -26,9 +26,9 @@ import java.util.logging.Logger;
  */
 public class ClientWindow {
 
+    private static final Color customBlue = new Color(220, 220, 255);
     private static ClientWindow instance;
     private static Logger logger = Logger.getLogger(ClientWindow.class.getName());
-
     private List<ColoredJLabel> selectedColors;
     private JButton addColorButton;
     private JButton confirmButton;
@@ -110,11 +110,12 @@ public class ClientWindow {
         dummyMessage.setRaw("PASSWORD");
         dummyMessage.setResponse(null);
         dummyMessage.setSequence(0);
-        dummyMessage.setColors(new Color[]{Color.LIGHT_GRAY,Color.LIGHT_GRAY,Color.LIGHT_GRAY,Color.LIGHT_GRAY});
+        dummyMessage.setColors(new Color[]{Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY});
         dummyMessage.setClientName(Constants.MASTER);
         dummyMessage.setType(ClientType.MASTER);
 
-        this.passwordRow = this.getSelectedRow(dummyMessage);
+        this.passwordRow = new JPanel();
+        this.passwordRow.add(this.getSelectedRow(dummyMessage));
         this.passwordRow.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createMatteBorder(1, 5, 1, 1, Color.DARK_GRAY),
                 "Password",
@@ -184,12 +185,14 @@ public class ClientWindow {
                 logger.log(Level.SEVERE, "Couldn't confirm selected colors!", e);
             }
         }
-
     }
 
-    public void setPasswordRow() {
-        this.passwordRow = this.getSelectedRow(this.passwordMessage);
-        this.refreshSelectedPanel();
+    public void setPasswordRow(MasterMindMessage message) {
+        this.passwordMessage = message;
+        this.passwordRow.removeAll();
+        this.passwordRow.add(this.getSelectedRow(this.passwordMessage));
+        this.passwordRow.repaint();
+        this.passwordRow.updateUI();
     }
 
     public void addServerConfirmationColors(MasterMindMessage masterMindMessage) {
@@ -246,6 +249,8 @@ public class ClientWindow {
                 ColoredJLabel label = new ColoredJLabel(colors[i]);
                 messagePanel.add(label);
             }
+
+            messagePanel.setBackground(customBlue);
         }
 
         return messagePanel;

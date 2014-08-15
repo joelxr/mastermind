@@ -39,8 +39,7 @@ public class MessageHandler implements Runnable {
 
                 if (message.getRaw().equals(Constants.WINNER)) {
                     clientWindow.disableControls();
-                    clientWindow.setPasswordRow();
-                    //JOptionPane.showConfirmDialog(null, message.getClientName() + " won the game with the follow message!", "Winner", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    clientWindow.setPasswordRow(message);
                 } else if (message.getType().equals(ClientType.MASTER) && Thread.currentThread().getName().contains(Constants.PLAYER)) {
                     clientWindow.addMasterPasswordMessage(message);
                 } else {
