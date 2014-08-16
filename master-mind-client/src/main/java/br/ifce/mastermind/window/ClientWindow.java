@@ -4,7 +4,8 @@ import br.ifce.mastermind.client.Client;
 import br.ifce.mastermind.component.ColoredJLabel;
 import br.ifce.mastermind.component.StackLayout;
 import br.ifce.mastermind.constants.Constants;
-import br.ifce.mastermind.entities.MasterMindMessage;
+import br.ifce.mastermind.message.ChatMessage;
+import br.ifce.mastermind.message.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.ColorUtil;
 import br.ifce.mastermind.util.MessageUtil;
@@ -128,7 +129,7 @@ public class ClientWindow {
         dummyMessage.setSequence(0);
         dummyMessage.setColors(new Color[]{Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY});
         dummyMessage.setClientName(Constants.MASTER);
-        dummyMessage.setType(ClientType.MASTER);
+        dummyMessage.setClientType(ClientType.MASTER);
 
         this.passwordRow = new JPanel();
         this.passwordRow.add(this.getSelectedRow(dummyMessage));
@@ -312,9 +313,9 @@ public class ClientWindow {
     }
 
     private void sendChatMessage() {
-        MasterMindMessage message = new MasterMindMessage();
-        message.setRaw(this.chatTextArea.getText());
-        message.setClientName(this.clientName);
+        ChatMessage message = new ChatMessage();
+        message.setContent(this.chatTextArea.getText());
+        message.setAuthor(this.clientName);
 
         try {
             MessageUtil.sendMasterMindMessage(Client.getInstance().getClientSocket(), message);
@@ -323,12 +324,12 @@ public class ClientWindow {
         }
     }
 
-    public void addChatMessage(MasterMindMessage message) {
+    public void addChatMessage(ChatMessage message) {
         JPanel messagePanel = new JPanel();
-        JLabel client = new JLabel(message.getClientName());
-        JLabel content = new JLabel(message.getRaw());
+        JLabel author = new JLabel(message.getAuthor());
+        JLabel content = new JLabel(message.getContent());
 
-        messagePanel.add(client);
+        messagePanel.add(author);
         messagePanel.add(content);
 
         this.messagesPanel.add(messagePanel);

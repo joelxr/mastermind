@@ -1,7 +1,10 @@
 package br.ifce.mastermind.handlers;
 
 import br.ifce.mastermind.engine.GameEngine;
-import br.ifce.mastermind.entities.MasterMindMessage;
+import br.ifce.mastermind.message.AbstractMessage;
+import br.ifce.mastermind.message.ControlMessage;
+import br.ifce.mastermind.message.MasterMindMessage;
+import br.ifce.mastermind.message.ChatMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 
@@ -22,28 +25,44 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
     public void process() {
 
         try {
-            MessageUtil.sendMessage(getSocket(), Thread.currentThread().getName());
+
+            ControlMessage ackMsg = new ControlMessage();
+            ackMsg.setMessage(Thread.currentThread().getName());
+            ackMsg.setClientType(getType());
+            ackMsg.setClientName(Thread.currentThread().getName());
+
+            MessageUtil.sendMasterMindMessage(getSocket(), ackMsg);
 
             if (GameEngine.getInstance().hasPassword()) {
                 MessageUtil.sendMasterMindMessage(getSocket(), GameEngine.getInstance().getPasswordMessage());
             }
 
-            MasterMindMessage message;
+            AbstractMessage message;
 
             while (true) {
+
                 message = MessageUtil.getMasterMindMessage(getSocket());
-                message.setType(getType());
-                if (message.getColors() != null) {
+                message.setClientType(getType());
+
+                if (message instanceof MasterMindMessage) {
+                    MasterMindMessage masterMindMessage = (MasterMindMessage) message;
+
                     if (GameEngine.getInstance().hasPassword()) {
-                        getLogger().info("Adding the follow message....  " + message);
-                        GameEngine.getInstance().addMessage(message);
-                        GameEngine.getInstance().checkMessage(message);
-                        MessageUtil.sendMasterMindMessage(getSocket(), message);
+                        getLogger().info("Adding the follow message....  " + masterMindMessage);
+                        GameEngine.getInstance().addMessage(masterMindMessage);
+                        GameEngine.getInstance().checkMessage(masterMindMessage);
+                        MessageUtil.sendMasterMindMessage(getSocket(), masterMindMessage);
                     } else {
                         getLogger().info("Master Player must set the password first!");
                     }
+
+                } else if (message instanceof ControlMessage) {
+
+                } else if (message instanceof ChatMessage) {
+                    ChatMessage chatMessage = (ChatMessage) message;
+                    GameEngine.getInstance().sendChatMessage(chatMessage);
                 } else {
-                    GameEngine.getInstance().sendChatMessage(message);
+                    getLogger().log(Level.SEVERE, "Cannot understand the message!");
                 }
             }
         } catch (IOException e) {

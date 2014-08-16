@@ -1,10 +1,14 @@
 package br.ifce.mastermind.handlers;
 
 import br.ifce.mastermind.engine.GameEngine;
-import br.ifce.mastermind.entities.MasterMindMessage;
+import br.ifce.mastermind.message.AbstractMessage;
+import br.ifce.mastermind.message.ChatMessage;
+import br.ifce.mastermind.message.ControlMessage;
+import br.ifce.mastermind.message.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 
+import javax.naming.ldap.Control;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -22,20 +26,30 @@ public class MasterMessageHandler extends AbstractMessageHandler {
     public void process() {
 
         try {
-            MessageUtil.sendMessage(getSocket(), Thread.currentThread().getName());
 
-            MasterMindMessage message;
+            ControlMessage ackMsg = new ControlMessage();
+            ackMsg.setMessage(Thread.currentThread().getName());
+            ackMsg.setClientType(getType());
+            ackMsg.setClientName(Thread.currentThread().getName());
+
+            MessageUtil.sendMasterMindMessage(getSocket(), ackMsg);
+
+            AbstractMessage message;
 
             while (true) {
                 message = MessageUtil.getMasterMindMessage(getSocket());
-                message.setType(getType());
+                message.setClientType(getType());
 
-                if (message.getColors() != null) {
-                    GameEngine.getInstance().addMessage(message);
-                    MessageUtil.sendMasterMindMessage(getSocket(), message);
-                    getLogger().info("Adding the follow message....  " + message);
-                } else {
-                    GameEngine.getInstance().sendChatMessage(message);
+                if (message instanceof MasterMindMessage) {
+                    MasterMindMessage masterMindMessage = (MasterMindMessage) message;
+                    GameEngine.getInstance().addMessage(masterMindMessage);
+                    MessageUtil.sendMasterMindMessage(getSocket(), masterMindMessage);
+                    getLogger().info("Adding the follow message....  " + masterMindMessage);
+                } else if (message instanceof ChatMessage) {
+                    ChatMessage chatMessage = (ChatMessage) message;
+                    GameEngine.getInstance().sendChatMessage(chatMessage);
+                } else if (message instanceof ControlMessage) {
+                    ControlMessage controlMessage = (ControlMessage) message;
                 }
 
                 this.setBusy(false);

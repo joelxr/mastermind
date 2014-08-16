@@ -1,7 +1,10 @@
 package br.ifce.mastermind.handler;
 
 import br.ifce.mastermind.constants.Constants;
-import br.ifce.mastermind.entities.MasterMindMessage;
+import br.ifce.mastermind.message.AbstractMessage;
+import br.ifce.mastermind.message.ChatMessage;
+import br.ifce.mastermind.message.ControlMessage;
+import br.ifce.mastermind.message.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
@@ -35,21 +38,30 @@ public class MessageHandler implements Runnable {
 
             while (true) {
 
-                MasterMindMessage message = MessageUtil.getMasterMindMessage(socket);
+                AbstractMessage message = MessageUtil.getMasterMindMessage(socket);
 
-                if (message.getRaw().equals(Constants.WINNER)) {
-                    clientWindow.disableControls();
-                    clientWindow.setPasswordRow(message);
-                } else if (message.getType().equals(ClientType.MASTER) && Thread.currentThread().getName().contains(Constants.PLAYER)) {
-                    clientWindow.addMasterPasswordMessage(message);
-                } else if (message.getColors() == null){
-                    clientWindow.addChatMessage(message);
-                } else {
-                    clientWindow.addServerConfirmationColors(message);
-                }
+                if (message instanceof MasterMindMessage) {
+                    MasterMindMessage masterMindMessage = (MasterMindMessage) message;
 
-                if (Thread.currentThread().getName().equals(Constants.MASTER)) {
-                    clientWindow.disableControls();
+                    if (masterMindMessage.getRaw().equals(Constants.WINNER)) {
+                        clientWindow.disableControls();
+                        clientWindow.setPasswordRow(masterMindMessage);
+                    } else if (message.getClientType().equals(ClientType.MASTER) && Thread.currentThread().getName().contains(Constants.PLAYER)) {
+                        clientWindow.addMasterPasswordMessage(masterMindMessage);
+                    } else {
+                        clientWindow.addServerConfirmationColors(masterMindMessage);
+                    }
+
+                    if (Thread.currentThread().getName().equals(Constants.MASTER)) {
+                        clientWindow.disableControls();
+                    }
+
+                } else if (message instanceof ChatMessage) {
+                    ChatMessage chatMessage = (ChatMessage) message;
+                    clientWindow.addChatMessage(chatMessage);
+                } else if (message instanceof ControlMessage) {
+                    ControlMessage controlMessage = (ControlMessage) message;
+
                 }
             }
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package br.ifce.mastermind.client;
 
 import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.handler.MessageHandler;
+import br.ifce.mastermind.message.ControlMessage;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
 
@@ -41,9 +42,9 @@ public class Client {
     private void retrieveClientName() {
 
         try {
-            String name = MessageUtil.getMessage(clientSocket);
-            this.name = name;
-        } catch (IOException e) {
+            ControlMessage controlMessage = (ControlMessage) MessageUtil.getMasterMindMessage(clientSocket);
+            this.name = controlMessage.getMessage();
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Couldn't retrieve the thread name!", e);
         }
     }

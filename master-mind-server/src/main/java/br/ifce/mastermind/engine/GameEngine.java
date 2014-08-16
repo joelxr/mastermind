@@ -1,7 +1,8 @@
 package br.ifce.mastermind.engine;
 
 import br.ifce.mastermind.constants.Constants;
-import br.ifce.mastermind.entities.MasterMindMessage;
+import br.ifce.mastermind.message.ChatMessage;
+import br.ifce.mastermind.message.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.handlers.AbstractMessageHandler;
 import br.ifce.mastermind.util.MessageUtil;
@@ -50,7 +51,7 @@ public class GameEngine {
     public void addMessage(MasterMindMessage message) {
         this.messages.add(message);
 
-        if (message.getType() == ClientType.MASTER) {
+        if (message.getClientType() == ClientType.MASTER) {
             this.passwordMessage = message;
             this.notifyAllPassword(message);
         } else {
@@ -108,7 +109,11 @@ public class GameEngine {
                 if (response[i] != null) {
                     if (!response[i].equals(Color.BLACK)) {
                         result = false;
+                        break;
                     }
+                } else {
+                    result = false;
+                    break;
                 }
             }
         }
@@ -121,7 +126,7 @@ public class GameEngine {
 
         MasterMindMessage message = new MasterMindMessage();
         message.setClientName(messageWon.getClientName());
-        message.setType(messageWon.getType());
+        message.setClientType(messageWon.getClientType());
         message.setColors(messageWon.getColors());
         message.setSequence(messageWon.getSequence());
         message.setResponse(messageWon.getResponse());
@@ -159,7 +164,7 @@ public class GameEngine {
         return this.passwordMessage;
     }
 
-    public void sendChatMessage(MasterMindMessage message) {
+    public void sendChatMessage(ChatMessage message) {
         try {
             MessageUtil.sendMasterMindMessage(masterHandler.getSocket(), message);
 
