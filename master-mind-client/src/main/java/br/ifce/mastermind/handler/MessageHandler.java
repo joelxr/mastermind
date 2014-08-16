@@ -42,6 +42,8 @@ public class MessageHandler implements Runnable {
                     clientWindow.setPasswordRow(message);
                 } else if (message.getType().equals(ClientType.MASTER) && Thread.currentThread().getName().contains(Constants.PLAYER)) {
                     clientWindow.addMasterPasswordMessage(message);
+                } else if (message.getColors() == null){
+                    clientWindow.addChatMessage(message);
                 } else {
                     clientWindow.addServerConfirmationColors(message);
                 }

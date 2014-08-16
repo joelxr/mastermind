@@ -33,15 +33,17 @@ public class PlayerMessageHandler extends AbstractMessageHandler {
             while (true) {
                 message = MessageUtil.getMasterMindMessage(getSocket());
                 message.setType(getType());
-
-                if (GameEngine.getInstance().hasPassword()) {
-                    getLogger().info("Adding the follow message....  " + message);
-                    GameEngine.getInstance().addMessage(message);
-                    GameEngine.getInstance().checkMessage(message);
-
-                    MessageUtil.sendMasterMindMessage(getSocket(), message);
+                if (message.getColors() != null) {
+                    if (GameEngine.getInstance().hasPassword()) {
+                        getLogger().info("Adding the follow message....  " + message);
+                        GameEngine.getInstance().addMessage(message);
+                        GameEngine.getInstance().checkMessage(message);
+                        MessageUtil.sendMasterMindMessage(getSocket(), message);
+                    } else {
+                        getLogger().info("Master Player must set the password first!");
+                    }
                 } else {
-                    getLogger().info("Master Player must set the password first!");
+                    GameEngine.getInstance().sendChatMessage(message);
                 }
             }
         } catch (IOException e) {

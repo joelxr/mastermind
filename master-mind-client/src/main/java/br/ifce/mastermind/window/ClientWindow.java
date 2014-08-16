@@ -2,6 +2,7 @@ package br.ifce.mastermind.window;
 
 import br.ifce.mastermind.client.Client;
 import br.ifce.mastermind.component.ColoredJLabel;
+import br.ifce.mastermind.component.StackLayout;
 import br.ifce.mastermind.constants.Constants;
 import br.ifce.mastermind.entities.MasterMindMessage;
 import br.ifce.mastermind.enums.ClientType;
@@ -33,18 +34,21 @@ public class ClientWindow {
     private JButton addColorButton;
     private JButton confirmButton;
     private JButton clearButton;
+    private JButton sendButton;
     private JComboBox selectColorComboBox;
     private JPanel selectionPanel;
     private JPanel selectedPanel;
     private JScrollPane scrollPane;
+    private JScrollPane chatScrollPane;
+    private JScrollPane messagesScrollPane;
+    private JPanel messagesPanel;
+    private JTextArea chatTextArea;
     private JLabel nameLabel;
-
     private List<JPanel> rows;
     private MasterMindMessage passwordMessage;
     private JPanel passwordRow;
     private Integer attemptCount = 0;
     private String clientName = "";
-
 
     static {
         try {
@@ -54,12 +58,12 @@ public class ClientWindow {
         }
     }
 
+    private JComboBox comboBox1;
+
     private ClientWindow() {
 
         logger.info("Starting client GUI....");
-
         this.selectedColors = new ArrayList<ColoredJLabel>();
-
         this.confirmButton = new JButton("Confirm");
         this.confirmButton.addActionListener(new ActionListener() {
             @Override
@@ -67,7 +71,6 @@ public class ClientWindow {
                 confirmSelectedColors();
             }
         });
-
         this.clearButton = new JButton("Clear");
         this.clearButton.addActionListener(new ActionListener() {
             @Override
@@ -75,15 +78,22 @@ public class ClientWindow {
                 clearSelectedColors();
             }
         });
-
+        this.sendButton = new JButton("Send");
+        this.sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendChatMessage();
+            }
+        });
         this.selectionPanel = new JPanel();
         this.selectionPanel.setBorder(new LineBorder(Color.DARK_GRAY));
         this.selectionPanel.setVisible(true);
-
         this.selectedPanel = new JPanel();
         this.selectedPanel.setVisible(true);
         this.selectedPanel.setLayout(new BoxLayout(this.selectedPanel, BoxLayout.Y_AXIS));
-
+        this.chatTextArea = new JTextArea();
+        this.messagesPanel = new JPanel();
+        this.messagesPanel.setLayout(new StackLayout(StackLayout.VERTICAL));
         this.scrollPane = new JScrollPane(selectedPanel);
         this.scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         this.scrollPane.setBorder(BorderFactory.createTitledBorder(
@@ -91,9 +101,17 @@ public class ClientWindow {
                 "Attempts",
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION));
-
+        this.chatScrollPane = new JScrollPane(this.chatTextArea);
+        this.chatScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.chatScrollPane.setBorder(new LineBorder(Color.DARK_GRAY));
+        this.messagesScrollPane = new JScrollPane(this.messagesPanel);
+        this.messagesScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.messagesScrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY),
+                "Chat",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION));
         this.selectColorComboBox = new JComboBox(ColorUtil.getValidColorNames());
-
         this.addColorButton = new JButton("Add");
         this.addColorButton.addActionListener(new ActionListener() {
             @Override
@@ -101,9 +119,7 @@ public class ClientWindow {
                 addSelectedColor();
             }
         });
-
         this.nameLabel = new JLabel("Welcome, ");
-
         this.rows = new ArrayList<JPanel>();
 
         MasterMindMessage dummyMessage = new MasterMindMessage();
@@ -122,6 +138,7 @@ public class ClientWindow {
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION));
     }
+
 
     public static ClientWindow getInstance() {
         if (instance == null) {
@@ -294,11 +311,35 @@ public class ClientWindow {
         this.clientName = value;
     }
 
+    private void sendChatMessage() {
+        MasterMindMessage message = new MasterMindMessage();
+        message.setRaw(this.chatTextArea.getText());
+        message.setClientName(this.clientName);
+
+        try {
+            MessageUtil.sendMasterMindMessage(Client.getInstance().getClientSocket(), message);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't confirm selected colors!", e);
+        }
+    }
+
+    public void addChatMessage(MasterMindMessage message) {
+        JPanel messagePanel = new JPanel();
+        JLabel client = new JLabel(message.getClientName());
+        JLabel content = new JLabel(message.getRaw());
+
+        messagePanel.add(client);
+        messagePanel.add(content);
+
+        this.messagesPanel.add(messagePanel);
+        this.messagesPanel.updateUI();
+    }
+
     public void addComponents(Container container) {
 
         container.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
         container.setLayout(new GridBagLayout());
-        container.setPreferredSize(new Dimension(360, 580));
+        container.setPreferredSize(new Dimension(760, 680));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -349,6 +390,29 @@ public class ClientWindow {
         constraints.gridy = 4;
         constraints.gridwidth = 1;
         container.add(this.addColorButton, constraints);
+
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.gridwidth = 8;
+        constraints.gridheight = 3;
+        constraints.weightx = 2;
+        constraints.weighty = 1;
+        container.add(this.messagesScrollPane, constraints);
+
+        constraints.gridx = 4;
+        constraints.gridy = 3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        container.add(this.chatScrollPane, constraints);
+
+        constraints.gridx = 8;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 2;
+        constraints.weightx = 0;
+        container.add(this.sendButton, constraints);
     }
 
     public void addMasterPasswordMessage(MasterMindMessage message) {

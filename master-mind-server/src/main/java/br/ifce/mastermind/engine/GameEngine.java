@@ -158,4 +158,16 @@ public class GameEngine {
     public MasterMindMessage getPasswordMessage() {
         return this.passwordMessage;
     }
+
+    public void sendChatMessage(MasterMindMessage message) {
+        try {
+            MessageUtil.sendMasterMindMessage(masterHandler.getSocket(), message);
+
+            for (int i = 0; i < this.playersHandler.size(); i++) {
+                MessageUtil.sendMasterMindMessage(playersHandler.get(i).getSocket(), message);
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Couldn't notify all player about the winner!", e);
+        }
+    }
 }

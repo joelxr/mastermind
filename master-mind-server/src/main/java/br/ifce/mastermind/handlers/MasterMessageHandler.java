@@ -29,9 +29,15 @@ public class MasterMessageHandler extends AbstractMessageHandler {
             while (true) {
                 message = MessageUtil.getMasterMindMessage(getSocket());
                 message.setType(getType());
-                GameEngine.getInstance().addMessage(message);
-                MessageUtil.sendMasterMindMessage(getSocket(), message);
-                getLogger().info("Adding the follow message....  " + message);
+
+                if (message.getColors() != null) {
+                    GameEngine.getInstance().addMessage(message);
+                    MessageUtil.sendMasterMindMessage(getSocket(), message);
+                    getLogger().info("Adding the follow message....  " + message);
+                } else {
+                    GameEngine.getInstance().sendChatMessage(message);
+                }
+
                 this.setBusy(false);
             }
 
