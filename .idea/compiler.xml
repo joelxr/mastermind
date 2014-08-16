@@ -27,6 +27,10 @@
         <module name="master-mind-server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="master-mind-client" target="1.8" />
+      <module name="master-mind-server" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
 

@@ -325,8 +325,11 @@ public class ClientWindow {
     }
 
     public void addChatMessage(ChatMessage message) {
+
         JPanel messagePanel = new JPanel();
-        JLabel author = new JLabel(message.getAuthor());
+        JLabel author = new JLabel(message.getAuthor() + " : ");
+        author.setFont(new Font("Serif", Font.BOLD, 11));
+        author.setForeground(Color.BLUE);
         JLabel content = new JLabel(message.getContent());
 
         messagePanel.add(author);
