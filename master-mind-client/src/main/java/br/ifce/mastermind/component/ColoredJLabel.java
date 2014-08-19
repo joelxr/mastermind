@@ -22,16 +22,19 @@ public class ColoredJLabel extends JLabel {
             g.setColor(this.color);
         else {
             g.setColor(Color.LIGHT_GRAY);
+            this.color = Color.LIGHT_GRAY;
         }
 
-        g.fillOval(0, 0, getWidth(), getHeight());
+//        if (this.color.equals(Color.BLACK) || this.color.equals(Color.WHITE) || this.color.equals(Color.LIGHT_GRAY)) {
+//            g.fillOval(0, 0, getWidth()/2, getHeight()/2);
+//        } else {
+            g.fillOval(0, 0, getWidth(), getHeight());
+//        }
+
+
     }
 
     public Color getColor() {
         return this.color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
     }
 }

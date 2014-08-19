@@ -9,6 +9,7 @@ import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.MessageUtil;
 import br.ifce.mastermind.window.ClientWindow;
 
+import javax.swing.*;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,8 +47,10 @@ public class MessageHandler implements Runnable {
                     if (masterMindMessage.getRaw().equals(Constants.WINNER)) {
                         clientWindow.disableControls();
                         clientWindow.setPasswordRow(masterMindMessage);
+                        JOptionPane.showMessageDialog(null, "Use: " + masterMindMessage.getClientName() + " won the game!", "Info", JOptionPane.INFORMATION_MESSAGE);
                     } else if (message.getClientType().equals(ClientType.MASTER) && Thread.currentThread().getName().contains(Constants.PLAYER)) {
                         clientWindow.addMasterPasswordMessage(masterMindMessage);
+                        JOptionPane.showMessageDialog(null, "Password defined!", "Info", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         clientWindow.addServerConfirmationColors(masterMindMessage);
                     }

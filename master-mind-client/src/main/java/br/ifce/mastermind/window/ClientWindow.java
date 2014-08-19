@@ -4,9 +4,9 @@ import br.ifce.mastermind.client.Client;
 import br.ifce.mastermind.component.ColoredJLabel;
 import br.ifce.mastermind.component.StackLayout;
 import br.ifce.mastermind.constants.Constants;
+import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.message.ChatMessage;
 import br.ifce.mastermind.message.MasterMindMessage;
-import br.ifce.mastermind.enums.ClientType;
 import br.ifce.mastermind.util.ColorUtil;
 import br.ifce.mastermind.util.MessageUtil;
 
@@ -17,7 +17,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,6 +52,7 @@ public class ClientWindow {
     private JPanel passwordRow;
     private Integer attemptCount = 0;
     private String clientName = "";
+    private JSplitPane splitPane;
 
     static {
         try {
@@ -93,6 +96,7 @@ public class ClientWindow {
         this.selectedPanel.setVisible(true);
         this.selectedPanel.setLayout(new BoxLayout(this.selectedPanel, BoxLayout.Y_AXIS));
         this.chatTextArea = new JTextArea();
+        this.chatTextArea.setLineWrap(true);
         this.messagesPanel = new JPanel();
         this.messagesPanel.setLayout(new StackLayout(StackLayout.VERTICAL));
         this.scrollPane = new JScrollPane(selectedPanel);
@@ -122,12 +126,13 @@ public class ClientWindow {
         });
         this.nameLabel = new JLabel("Welcome, ");
         this.rows = new ArrayList<JPanel>();
+        this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
         MasterMindMessage dummyMessage = new MasterMindMessage();
         dummyMessage.setRaw("PASSWORD");
         dummyMessage.setResponse(null);
         dummyMessage.setSequence(0);
-        dummyMessage.setColors(new Color[]{Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY, Color.LIGHT_GRAY});
+        dummyMessage.setColors(new Color[]{Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY});
         dummyMessage.setClientName(Constants.MASTER);
         dummyMessage.setClientType(ClientType.MASTER);
 
@@ -238,6 +243,7 @@ public class ClientWindow {
 
         JPanel messagePanel = getMessageColorsPanel(masterMindMessage.getColors());
         JPanel responsePanel = getMessageColorsPanel(masterMindMessage.getResponse());
+        //JPanel responsePanel = getResponseColorsPanel(masterMindMessage.getResponse());
 
         row.add(new JLabel(masterMindMessage.getClientName() + " # " + String.format("%03d", (masterMindMessage.getSequence()))));
 
@@ -252,6 +258,32 @@ public class ClientWindow {
         row.add(new JLabel("(" + String.format("%03d", this.rows.size()) + ")"));
 
         return row;
+    }
+
+    private JPanel getResponseColorsPanel(Color[] colors) {
+        JPanel responsePanel = null;
+        JPanel row1 = new JPanel();
+        JPanel row2 = new JPanel();
+
+        if (colors != null) {
+
+            responsePanel = new JPanel(new StackLayout(StackLayout.VERTICAL));
+            responsePanel.setBorder(new LineBorder(Color.DARK_GRAY));
+
+            for (int i = 0; i < colors.length; i++) {
+                ColoredJLabel label = new ColoredJLabel(colors[i]);
+                if (i % 2 == 0)
+                    row1.add(label);
+                else
+                    row2.add(label);
+            }
+
+            responsePanel.setBackground(customBlue);
+            responsePanel.add(row1);
+            responsePanel.add(row2);
+        }
+
+        return responsePanel;
     }
 
     private JPanel getMessageColorsPanel(Color[] colors) {
@@ -326,15 +358,15 @@ public class ClientWindow {
 
     public void addChatMessage(ChatMessage message) {
 
-        JPanel messagePanel = new JPanel();
-        JLabel author = new JLabel(message.getAuthor() + " : ");
-        author.setFont(new Font("Serif", Font.BOLD, 11));
-        author.setForeground(Color.BLUE);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        JPanel messagePanel = new JPanel(new StackLayout(StackLayout.VERTICAL));
+        JLabel timeAuthor = new JLabel( "[" + format.format(new Date()) + "] " + message.getAuthor() + " : ") ;
+        timeAuthor.setFont(new Font("Serif", Font.BOLD, 11));
+        timeAuthor.setForeground(Color.BLUE);
         JLabel content = new JLabel(message.getContent());
-
-        messagePanel.add(author);
+        content.setFont(new Font("Serif", Font.PLAIN, 11));
+        messagePanel.add(timeAuthor);
         messagePanel.add(content);
-
         this.messagesPanel.add(messagePanel);
         this.messagesPanel.updateUI();
     }
