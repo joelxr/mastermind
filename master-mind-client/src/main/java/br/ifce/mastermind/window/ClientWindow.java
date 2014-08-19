@@ -52,7 +52,6 @@ public class ClientWindow {
     private JPanel passwordRow;
     private Integer attemptCount = 0;
     private String clientName = "";
-    private JSplitPane splitPane;
 
     static {
         try {
@@ -61,8 +60,6 @@ public class ClientWindow {
             logger.log(Level.SEVERE, "Couldn't create Look and Feel settings!", e);
         }
     }
-
-    private JComboBox comboBox1;
 
     private ClientWindow() {
 
@@ -126,7 +123,6 @@ public class ClientWindow {
         });
         this.nameLabel = new JLabel("Welcome, ");
         this.rows = new ArrayList<JPanel>();
-        this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
         MasterMindMessage dummyMessage = new MasterMindMessage();
         dummyMessage.setRaw("PASSWORD");
@@ -373,9 +369,9 @@ public class ClientWindow {
 
     public void addComponents(Container container) {
 
-        container.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-        container.setLayout(new GridBagLayout());
-        container.setPreferredSize(new Dimension(760, 680));
+        JPanel leftPanel = new JPanel();
+        leftPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        leftPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -385,70 +381,71 @@ public class ClientWindow {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 4;
-        container.add(this.nameLabel, constraints);
+        leftPanel.add(this.nameLabel, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 4;
-        container.add(this.passwordRow, constraints);
+        leftPanel.add(this.passwordRow, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 4;
         constraints.weightx = 2;
         constraints.weighty = 1;
-        container.add(this.scrollPane, constraints);
+        leftPanel.add(this.scrollPane, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 0;
-        container.add(this.selectionPanel, constraints);
+        leftPanel.add(this.selectionPanel, constraints);
 
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 0;
-        container.add(this.clearButton, constraints);
+        leftPanel.add(this.clearButton, constraints);
 
         constraints.gridx = 3;
         constraints.gridy = 3;
         constraints.gridwidth = 1;
-        container.add(this.confirmButton, constraints);
+        leftPanel.add(this.confirmButton, constraints);
 
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.gridwidth = 3;
-        container.add(this.selectColorComboBox, constraints);
+        leftPanel.add(this.selectColorComboBox, constraints);
 
         constraints.gridx = 3;
         constraints.gridy = 4;
         constraints.gridwidth = 1;
-        container.add(this.addColorButton, constraints);
+        leftPanel.add(this.addColorButton, constraints);
 
-        constraints.gridx = 4;
-        constraints.gridy = 0;
-        constraints.gridwidth = 8;
-        constraints.gridheight = 3;
-        constraints.weightx = 2;
-        constraints.weighty = 1;
-        container.add(this.messagesScrollPane, constraints);
+        JPanel rightPanel = new JPanel();
+        rightPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        rightPanel.setLayout(new BorderLayout());
 
-        constraints.gridx = 4;
-        constraints.gridy = 3;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 0;
-        container.add(this.chatScrollPane, constraints);
+        this.chatTextArea.setRows(4);
+        this.chatTextArea.setColumns(12);
 
-        constraints.gridx = 8;
-        constraints.gridy = 3;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.weightx = 0;
-        container.add(this.sendButton, constraints);
+        JPanel messagePanel = new JPanel();
+        messagePanel.add(this.chatScrollPane);
+        messagePanel.add(this.sendButton);
+
+        rightPanel.add(messagePanel, BorderLayout.SOUTH);
+        rightPanel.add(this.messagesScrollPane,BorderLayout.CENTER);
+        rightPanel.setMinimumSize(new Dimension(250, 500));
+
+        JSplitPane splitPane1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane1.setOneTouchExpandable(true);
+        splitPane1.setLeftComponent(leftPanel);
+        splitPane1.setRightComponent(rightPanel);
+        splitPane1.setDividerLocation(10000);
+
+        container.setPreferredSize(new Dimension(600, 700));
+        container.add(splitPane1);
     }
 
     public void addMasterPasswordMessage(MasterMindMessage message) {
